@@ -24,7 +24,7 @@ class Player(pygame.sprite.Sprite):
         self.increament =  0.01
         self.rotation_vel = rotation_vel
         self.angle = 0
-        self.speed = 25 
+        self.speed = 10
         self.is_moving = False
 
     # Import the starting assets
@@ -105,7 +105,7 @@ class Meteorites:
         self.list_meteors = []
 
         for meteor in range(amount):
-            meteor = Meteor((random.randint(0, 10000) , random.randint(0, 1000)) , group) 
+            meteor = Meteor((random.randint(0, 10000) , random.randint(0, 10000)) , group) 
             self.list_meteors.append(meteor)
             print(meteor.rect)
         # print(self.list_meteors)
