@@ -30,7 +30,7 @@ class Player(pygame.sprite.Sprite):
     # Import the starting assets
     def import_assets(self):
         print('here')
-        self.asset = pygame.transform.scale(pygame.image.load('../graphics/shooter.png').convert_alpha(), (32, 32))
+        self.asset = load_image('../graphics/shooter.png', (32, 32)) 
 
     def rotate(self, left=False, right=False):
         if left:
@@ -58,7 +58,7 @@ class Player(pygame.sprite.Sprite):
         y -= vertical
         new_pos = (self.pos[0] + x, self.pos[1] + y)
         self.pos = new_pos
-        print(self.vel)
+        # print(self.vel)
     # Function to reduce speed once the player stop pressing W
     def reduce_speed(self, dt):
         if not self.is_moving:
@@ -95,18 +95,20 @@ class Meteor(pygame.sprite.Sprite):
 
         self.image = None
         self.load_asset()
-        self.rect = self.image.get_rect()
+        self.rect = self.image.get_rect(center = self.pos)
 
     def load_asset(self):
-        self.image = pygame.image.load('../graphics/meteor.png')
+        self.image = load_image('../graphics/meteor.png' , (64,64)) 
 
 class Meteorites:
     def __init__(self,group, amount):
         self.list_meteors = []
 
         for meteor in range(amount):
-            meteor = Meteor((random.randint(0, 1000) , random.randint(0, 1000)) , group) 
+            meteor = Meteor((random.randint(0, 10000) , random.randint(0, 1000)) , group) 
             self.list_meteors.append(meteor)
+            print(meteor.rect)
+        # print(self.list_meteors)
 
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, pos, group, player):
@@ -119,7 +121,7 @@ class Bullet(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center = pos)
 
     def load_asset(self):
-        self.image = pygame.image.load('../graphics/bullet.png')
+        self.image = load_image('../graphics/bullet.png' , (32,32))
 
     def move(self):
         pass

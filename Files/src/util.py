@@ -4,10 +4,9 @@ from os import walk
 
 os.chdir(os.path.dirname(__file__))
 
-def load_image(path):
-    BASE_PATH = 'Images/'
+def load_image(path, size):
     
-    image = pygame.image.load(BASE_PATH + path).convert_alpha()
+    image = pygame.transform.scale(pygame.image.load(path).convert_alpha(), size)
     
     return image
 
