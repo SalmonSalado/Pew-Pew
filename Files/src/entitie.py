@@ -1,4 +1,5 @@
 import pygame
+import random
 from util import * 
 import math
 
@@ -86,7 +87,52 @@ class Player(pygame.sprite.Sprite):
         self.rotate()
         self.move_forward(dt) 
 
+class Meteor(pygame.sprite.Sprite):
+    def __init__(self, pos, group):
+        super().__init__(group) 
 
+        self.pos = pos
+
+        self.image = None
+        self.load_asset()
+        self.rect = self.image.get_rect()
+
+    def load_asset(self):
+        self.image = pygame.image.load('../graphics/meteor.png')
+
+class Meteorites:
+    def __init__(self,group, amount):
+        self.list_meteors = []
+
+        for meteor in range(amount):
+            meteor = Meteor((random.randint(0, 1000) , random.randint(0, 1000)) , group) 
+            self.list_meteors.append(meteor)
+
+class Bullet(pygame.sprite.Sprite):
+    def __init__(self, pos, group, player):
+        super().__init__(group)
+        self.player = player
+        self.pos = pos
+        
+        self.image = None
+        self.load_asset() 
+        self.rect = self.image.get_rect(center = pos)
+
+    def load_asset(self):
+        self.image = pygame.image.load('../graphics/bullet.png')
+
+    def move(self):
+        pass
+
+    def delete_self(self):
+        pass
+
+    def update(self, dt):
+        pass
+
+
+
+# Something to be used for tests
 class Example(pygame.sprite.Sprite):
     def __init__(self, pos, group,rotation_vel):
         super().__init__(group)
