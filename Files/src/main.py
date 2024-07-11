@@ -25,7 +25,11 @@ class Game:
                         sys.exit()
             dt = self.clock.tick() / 1000
             pygame.display.update()
-            self.level.update(dt)
+            if not self.level.game_over:
+                self.level.update(dt)
+            else:
+                run = False
+                sys.exit()
 
 if __name__ == '__main__':
     game = Game()

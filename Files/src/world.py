@@ -7,14 +7,22 @@ class Level:
         self.display_surf = pygame.display.get_surface()
 
         self.all_sprite = CameraGroup()
+        self.collision_sprites = pygame.sprite.Group()
+
+        self.game_over = False
 
         self.setup()
 
     def setup(self):
-        self.player = Player((SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2) , self.all_sprite,2,0.3)
+        self.player = Player((SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2) , self.all_sprite,2,0.8, self.collision_sprites)
         self.bullet = Bullet((250, 250), self.all_sprite, self.player)
-        self.meteors = Meteorites(self.all_sprite,1500)
+        self.meteors = Meteorites([self.all_sprite, self.collision_sprites],1500)
+
+    def game_status(self):
+        if self.player.game_over:
+            self.game_over = True
     def update(self, dt): 
+        self.game_status()
         self.display_surf.fill((50,50,50))
         self.all_sprite.customize_draw(self.player)
         self.all_sprite.update(dt)

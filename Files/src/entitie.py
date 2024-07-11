@@ -5,8 +5,10 @@ import math
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, pos, group, max_vel, rotation_vel):
+    def __init__(self, pos, group, max_vel, rotation_vel, collision_sprites):
         super().__init__(group)
+        
+        self.collision_sprites = collision_sprites
 
         self.import_assets() 
 
@@ -25,11 +27,13 @@ class Player(pygame.sprite.Sprite):
         self.rotation_vel = rotation_vel
         self.angle = 0
         self.speed = 10
-        self.is_moving = False
+        self.is_moving = False 
+
+        # To check if the game should end
+        self.game_over = False
 
     # Import the starting assets
-    def import_assets(self):
-        print('here')
+    def import_assets(self): 
         self.asset = load_image('../graphics/shooter.png', (32, 32)) 
 
     def rotate(self, left=False, right=False):
@@ -64,6 +68,13 @@ class Player(pygame.sprite.Sprite):
         if not self.is_moving:
             self.vel = max(self.vel - (self.speed / 2) * dt * 0.025  , 0)
     # Function for inputs of the player
+
+    def collision_check(self): 
+        for sprite in self.collision_sprites.sprites(): 
+            if sprite.rect.colliderect(self.rect): 
+                    #self.game_over = True
+                    print("Game Over")
+
     def draw(self): 
         self.image , self.rect = rotate_img(self.img_original, self.pos, self.angle)
 
@@ -86,6 +97,7 @@ class Player(pygame.sprite.Sprite):
         self.input(dt)
         self.rotate()
         self.move_forward(dt) 
+        self.collision_check()
 
 class Meteor(pygame.sprite.Sprite):
     def __init__(self, pos, group):
@@ -106,8 +118,7 @@ class Meteorites:
 
         for meteor in range(amount):
             meteor = Meteor((random.randint(0, 10000) , random.randint(0, 10000)) , group) 
-            self.list_meteors.append(meteor)
-            print(meteor.rect)
+            self.list_meteors.append(meteor) 
         # print(self.list_meteors)
 
 class Bullet(pygame.sprite.Sprite):

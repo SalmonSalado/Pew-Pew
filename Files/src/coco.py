@@ -11,33 +11,15 @@ ship_rect = ship.get_rect()
 
 ship_rect.center = (50,50)
 
-rotated_ship = ship
-rotated_ship_rect = ship_rect
+color = (0,255,0)
 
-start_time = pygame.time.get_ticks()
-delay = 500
-angle = 0
-
-def rotate_img(image, topleft, angle):
-    center = image.get_rect(topleft = topleft).center
-    rotated_img = pygame.transform.rotate(image, angle)
-    new_rect = rotated_img.get_rect(center=center)
-
-    return rotated_img , new_rect 
+mouse_block = pygame.Surface((1,1))
+mouse_block.fill(color)
+mouse_rect = mouse_block.get_rect(center=pygame.mouse.get_pos())
 
 while run:
-    current_time = pygame.time.get_ticks()
-    screen.fill('black')
-   
-    if angle > 360: angle = 0
-    
-
-    if current_time - start_time > delay:
-        start_time = current_time
-        angle += 90
-        rotated_ship , rotated_ship_rect = rotate_img(ship, ship_rect.topleft, angle) 
-
-    print(angle)
+    screen.fill((100,100,100))
+    mouse_rect.center = pygame.mouse.get_pos()
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -47,5 +29,6 @@ while run:
             if event.key == pygame.K_x:
                 run = False
 
-    screen.blit(rotated_ship, rotated_ship_rect) 
+    screen.blit(pygame.mask.from_surface(ship).to_surface() , ship_rect)
+    screen.blit(mouse_block, mouse_rect)
     pygame.display.flip()
