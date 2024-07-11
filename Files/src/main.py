@@ -25,7 +25,7 @@ class Game:
                         sys.exit()
             dt = self.clock.tick() / 1000
             pygame.display.update()
-            if not self.level.game_over:
+            if not self.level.all_states['quit']:
                 self.level.update(dt)
             else:
                 run = False

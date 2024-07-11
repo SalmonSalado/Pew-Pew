@@ -1,7 +1,9 @@
 import pygame
+from button import Button
 import random
 from util import * 
 import math
+from settings import *
 
 
 class Player(pygame.sprite.Sprite):
@@ -72,7 +74,10 @@ class Player(pygame.sprite.Sprite):
     def collision_check(self): 
         for sprite in self.collision_sprites.sprites(): 
             if sprite.rect.colliderect(self.rect): 
-                    #self.game_over = True
+                sprite_mask = pygame.mask.from_surface(sprite.image)
+                player_mask = pygame.mask.from_surface(self.image)
+                if sprite_mask.overlap(player_mask , (self.rect.x - sprite.rect.x , self.rect.y - sprite.rect.y)):
+                    # self.game_over = True
                     print("Game Over")
 
     def draw(self): 
@@ -143,7 +148,15 @@ class Bullet(pygame.sprite.Sprite):
     def update(self, dt):
         pass
 
+class Menus:
+    def __init__(self):
+        self.paused_button = Button((SCREEN_WIDTH / 2 , SCREEN_HEIGHT / 2) , '../graphics/paused_button.png' , (32, 64)) 
 
+    def pause(self, surface): 
+        if self.paused_button.draw(surface):
+            return True
+        else:
+            return False
 
 # Something to be used for tests
 class Example(pygame.sprite.Sprite):
