@@ -18,3 +18,7 @@ pip install -r requirements.txt
 python main.py
 ```
 
+### c) Enjoy
+
+That's it. I hope you enjoy trying this little project that I made. It is the firt game-project that I complete in my own, incorporating techniques and methods from tutorials and other sources, but adapting them into my own needs and what the project needed. It felt satisfying working on this, even though it is very simple and not properly optimized. 
+
