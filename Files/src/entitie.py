@@ -9,9 +9,9 @@ from settings import *
 class Player(pygame.sprite.Sprite):
     def __init__(self, pos, group, max_vel, rotation_vel, collision_sprites):
         super().__init__(group)
-        
+       # Gets all the sprites that are collideable. 
         self.collision_sprites = collision_sprites
-
+        # Imports the assets for the class
         self.import_assets() 
 
         self.pos = pos
@@ -51,6 +51,7 @@ class Player(pygame.sprite.Sprite):
         else:
             self.reduce_speed(dt)
             self.move()
+    # Method that move the player and calculates how much should the player move based on the angle that its facing
     def move(self):
         x = 0
         y = 0
@@ -68,21 +69,34 @@ class Player(pygame.sprite.Sprite):
     # Function to reduce speed once the player stop pressing W
     def reduce_speed(self, dt):
         if not self.is_moving:
-            self.vel = max(self.vel - (self.speed / 2) * dt * 0.025  , 0)
-    # Function for inputs of the player
-
+            self.vel = max(self.vel - (self.speed / 2) * dt * 0.025  , 0) 
+    
+    # Function that check if a collision occured with the player.rect and if that's so, then create a mask of the object and the player
+    # To provide pixel perfect collision.
+    # This way, the program avoids creating a mask every single time
+    # And instead only creates it when a collision has ocurred and it has to make sure
+    # that it is an overlap between the two sprites and not just their pygame.rect
     def collision_check(self): 
         for sprite in self.collision_sprites.sprites(): 
             if sprite.rect.colliderect(self.rect): 
                 sprite_mask = pygame.mask.from_surface(sprite.image)
                 player_mask = pygame.mask.from_surface(self.image)
                 if sprite_mask.overlap(player_mask , (self.rect.x - sprite.rect.x , self.rect.y - sprite.rect.y)):
-                    # self.game_over = True
-                    print("Game Over")
+                    self.game_over = True 
+
+
+    # Function used to reset the player once the game is over
+    def reset(self):
+        self.game_over = False
+        self.pos = (SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+        self.vel = 0
+        self.rect.center = self.pos
+        self.angle = 0
 
     def draw(self): 
         self.image , self.rect = rotate_img(self.img_original, self.pos, self.angle)
 
+    # Method that handles all the inputs of the player
     def input(self, dt):
         keys = pygame.key.get_pressed()
 
@@ -104,6 +118,7 @@ class Player(pygame.sprite.Sprite):
         self.move_forward(dt) 
         self.collision_check()
 
+# Class for the meteor that appears in the game
 class Meteor(pygame.sprite.Sprite):
     def __init__(self, pos, group):
         super().__init__(group) 
@@ -117,6 +132,7 @@ class Meteor(pygame.sprite.Sprite):
     def load_asset(self):
         self.image = load_image('../graphics/meteor.png' , (64,64)) 
 
+# Class that handles all the meteors in the game
 class Meteorites:
     def __init__(self,group, amount):
         self.list_meteors = []
@@ -147,13 +163,23 @@ class Bullet(pygame.sprite.Sprite):
 
     def update(self, dt):
         pass
-
+# Method for the menus in the game
 class Menus:
     def __init__(self):
-        self.paused_button = Button((SCREEN_WIDTH / 2 , SCREEN_HEIGHT / 2) , '../graphics/paused_button.png' , (32, 64)) 
+        # The Button class provides a method that allows to check if the user has pressed the button with the mouse
+        # It is checked using the Button.draw() method
+        self.paused_button = Button((SCREEN_WIDTH / 2 , SCREEN_HEIGHT / 2) , '../graphics/paused_button0.png' , (96, 64)) 
+        self.play_button = Button((SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2), '../graphics/play_button0.png', (94, 64))
 
     def pause(self, surface): 
         if self.paused_button.draw(surface):
+            self.paused_button.image = load_image('../graphics/paused_button1.png', (96, 64))
+            return True
+        else: 
+            return False
+    def main_menu(self, surface):
+        if self.play_button.draw(surface):
+            self.play_button.image = load_image('../graphics/play_button1.png', (94, 64))
             return True
         else:
             return False

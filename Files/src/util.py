@@ -1,9 +1,10 @@
 import pygame
 import os
 from os import walk
-
+# Changes the working directory to the one that we are in, to allow for the paths to be flexible and coherent
 os.chdir(os.path.dirname(__file__))
 
+# Function to load an image 
 def load_image(path, size):
     
     image = pygame.transform.scale(pygame.image.load(path).convert_alpha(), size)
@@ -21,7 +22,8 @@ def load_images(path):
 
 
     return surface_list
-
+# Function to return a dictionary with the keys as names of the folders in which the sprites are, and the sprites themselves
+# As part of the values of the keys
 def load_img_dict(path, size):
     BASE_PATH = 'Images/'
 
@@ -41,7 +43,7 @@ def load_img_dict(path, size):
 
 
     return dictionary
-
+# Function for rotating an image given a position and an angle
 def rotate_img(old_img, topleft, angle):
     center = old_img.get_rect(topleft = topleft).center
     rotated_image = pygame.transform.rotate(old_img, angle)
