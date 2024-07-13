@@ -205,8 +205,8 @@ class Meteorites:
         self.list_meteors = []
 
         for meteor in range(amount):
-            bounds_x = [random.randint(-LIMIT_DISTANCE , SCREEN_WIDTH - 200) , random.randint(SCREEN_WIDTH + 200, LIMIT_DISTANCE)]
-            bounds_y = [random.randint(-LIMIT_DISTANCE , SCREEN_HEIGHT - 200) , random.randint(SCREEN_HEIGHT + 200 ,  LIMIT_DISTANCE)]
+            bounds_x = [random.randint(-LIMIT_DISTANCE , SCREEN_WIDTH - 100) , random.randint(SCREEN_WIDTH + 100, LIMIT_DISTANCE)]
+            bounds_y = [random.randint(-LIMIT_DISTANCE , SCREEN_HEIGHT - 100) , random.randint(SCREEN_HEIGHT + 100 ,  LIMIT_DISTANCE)]
             meteor = Meteor((random.choice(bounds_x) , random.choice(bounds_y)) , group) 
             self.list_meteors.append(meteor) 
 
