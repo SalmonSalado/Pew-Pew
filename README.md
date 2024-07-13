@@ -15,7 +15,7 @@ pip install -r requirements.txt
 ### b) Execute main file
 
 ```sh
-python main.py
+python files\src\main.py
 ```
 
 ### c) Enjoy
