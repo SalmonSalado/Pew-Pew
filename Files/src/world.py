@@ -1,8 +1,10 @@
 import pygame
 from entitie import *
 from settings import * 
-from button import Button
+from score import Score
 from util import *
+from menu_script import Menus
+from coin import Coins
 
 class Level:
     def __init__(self):
@@ -29,11 +31,12 @@ class Level:
     def setup(self):
         # Sets all the objects that we will be using in the project
         self.player = Player((SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2) , self.all_game_sprites,2,0.8, self.collision_sprites)
-        self.bullet = Bullet((250, 250), self.all_game_sprites, self.player)
+        self.enemies = Enemies(self.player , [self.all_game_sprites, self.collision_sprites], 150) 
         self.meteors = Meteorites([self.all_game_sprites, self.collision_sprites],1500)
         self.menus = Menus()
         self.background_sprite = load_image('../graphics/background.png', (SCREEN_WIDTH, SCREEN_HEIGHT))
-
+        self.score = Score( ( 0 , 0) , 0)
+        self.coins = Coins([self.all_game_sprites , self.collision_sprites] , 500)
     def Game_over(self):
         # Resets the game to how it was at the start
         self.player.reset() 
@@ -42,7 +45,18 @@ class Level:
         # Removes all previously stated meteors so that they do not remain in the game.
         for meteor in self.meteors.list_meteors:
             meteor.kill()
+        self.meteors.list_meteors = []
         self.meteors = Meteorites([self.all_game_sprites, self.collision_sprites], 1500)
+        for enemy in self.enemies.list_enemies:
+            enemy.kill()
+
+        self.enemies.list_enemies = []
+        self.enemies = Enemies(self.player , [self.all_game_sprites , self.collision_sprites] , 1000)
+        
+        for coin in self.coins.list_coins:
+            coin.kill()
+        self.coins.list_coins = []
+        self.coins = Coins([self.all_game_sprites , self.collision_sprites] , 500) 
     # The start menu of the game
     def Main_menu(self):
         self.display_surf.blit(self.background_sprite, self.background_sprite.get_rect())
@@ -52,6 +66,9 @@ class Level:
 
     def Main_game(self, dt):
         self.display_surf.fill((50,50,50))
+        self.score.update(self.player , self.display_surf)
+        self.coins.update()
+        self.enemies.update(dt)
         self.all_game_sprites.customize_draw(self.player)
         self.all_game_sprites.update(dt) 
 
@@ -61,7 +78,6 @@ class Level:
         if self.menus.pause(self.display_surf): 
             self.all_states['Main_game'] = True
             self.all_states['Pause_menu'] = False
-
     # Function that handles the decision of which state should the game be. 
     # Example: Should the game be in pause or continue just like that?
     def decide_state(self):

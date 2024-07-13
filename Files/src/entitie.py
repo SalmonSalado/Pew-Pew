@@ -28,11 +28,15 @@ class Player(pygame.sprite.Sprite):
         self.increament =  0.01
         self.rotation_vel = rotation_vel
         self.angle = 0
-        self.speed = 10
+        self.speed = 15
         self.is_moving = False 
 
         # To check if the game should end
         self.game_over = False
+
+        # This variable keeps track of the points collected
+
+        self.coin_score = 0
 
     # Import the starting assets
     def import_assets(self): 
@@ -82,16 +86,24 @@ class Player(pygame.sprite.Sprite):
                 sprite_mask = pygame.mask.from_surface(sprite.image)
                 player_mask = pygame.mask.from_surface(self.image)
                 if sprite_mask.overlap(player_mask , (self.rect.x - sprite.rect.x , self.rect.y - sprite.rect.y)):
-                    self.game_over = True 
-
-
-    # Function used to reset the player once the game is over
+                    # This is to check if the player has collided with a coin, otherwise continue as usual
+                    try:
+                        sprite.is_coin
+                    except AttributeError:
+                        self.game_over = True
+                    else:
+                        self.coin_score += 1 
+                        sprite.delete_this = True
+# Function used to reset the player once the game is over
     def reset(self):
         self.game_over = False
         self.pos = (SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
         self.vel = 0
         self.rect.center = self.pos
         self.angle = 0
+        self.coin_score = 0
+        self.speed += 15
+        self.rotation_vel = 2.6  
 
     def draw(self): 
         self.image , self.rect = rotate_img(self.img_original, self.pos, self.angle)
@@ -118,6 +130,61 @@ class Player(pygame.sprite.Sprite):
         self.move_forward(dt) 
         self.collision_check()
 
+class Enemy(pygame.sprite.Sprite):
+    def __init__(self, pos, group):
+        super().__init__(group)
+
+        self.image_original = None
+        self.load_asset()
+        self.image = self.image_original
+        self.rect = self.image.get_rect(center=pos)
+        self.speed = 100
+        self.pos = pos
+
+        self.direction = 0
+        self.distance = 0
+
+        self.angle = 0
+
+    def rotate(self, player):
+        distance_pos = ( player.rect.x - self.rect.x , player.rect.y - self.rect.y)
+        self.angle = math.degrees(math.atan2(distance_pos[1] , distance_pos[0]))
+
+    def load_asset(self):
+        self.image_original = load_image('../graphics/enemy.png', (32, 32))
+    def move(self, dt):
+        new_pos = self.pos
+
+        new_pos= ( new_pos[0] + self.direction[0] * dt * self.speed, new_pos[1] + self.direction[1] * dt * self.speed)
+        self.pos = new_pos
+        self.rect.center = self.pos
+
+    def detect_player(self,player):
+        self.direction = ( player.rect.x - self.rect.x  , player.rect.y - self.rect.y)
+        self.distance = math.sqrt( self.direction[0]**2 + self.direction[1]**2)
+
+        if self.distance != 0:
+            self.direction = ( self.direction[0] / self.distance , self.direction[1] / self.distance)
+    def draw(self, player):
+        self.rotate(player)
+        self.image , self.rect = rotate_img(self.image_original, self.pos, self.angle)
+class Enemies:
+    def __init__(self,player,  group, amount):  
+        self.player = player
+        self.distance = 0
+        self.list_enemies = []
+        for enemy in range(amount):
+            bounds_x = [random.randint(-LIMIT_DISTANCE , SCREEN_WIDTH - 200) , random.randint(SCREEN_WIDTH + 200, LIMIT_DISTANCE)]
+            bounds_y = [random.randint(-LIMIT_DISTANCE , SCREEN_HEIGHT - 200) , random.randint(SCREEN_HEIGHT + 200 ,  LIMIT_DISTANCE)]
+            enemy = Enemy((random.choice(bounds_x) , random.choice(bounds_y)),  group)
+            self.list_enemies.append(enemy) 
+
+    def update(self, dt):
+        for enemy in self.list_enemies:
+            enemy.detect_player(self.player)
+            enemy.move(dt)
+            enemy.draw(self.player)
+
 # Class for the meteor that appears in the game
 class Meteor(pygame.sprite.Sprite):
     def __init__(self, pos, group):
@@ -138,9 +205,10 @@ class Meteorites:
         self.list_meteors = []
 
         for meteor in range(amount):
-            meteor = Meteor((random.randint(0, 10000) , random.randint(0, 10000)) , group) 
+            bounds_x = [random.randint(-LIMIT_DISTANCE , SCREEN_WIDTH - 200) , random.randint(SCREEN_WIDTH + 200, LIMIT_DISTANCE)]
+            bounds_y = [random.randint(-LIMIT_DISTANCE , SCREEN_HEIGHT - 200) , random.randint(SCREEN_HEIGHT + 200 ,  LIMIT_DISTANCE)]
+            meteor = Meteor((random.choice(bounds_x) , random.choice(bounds_y)) , group) 
             self.list_meteors.append(meteor) 
-        # print(self.list_meteors)
 
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, pos, group, player):
@@ -163,26 +231,6 @@ class Bullet(pygame.sprite.Sprite):
 
     def update(self, dt):
         pass
-# Method for the menus in the game
-class Menus:
-    def __init__(self):
-        # The Button class provides a method that allows to check if the user has pressed the button with the mouse
-        # It is checked using the Button.draw() method
-        self.paused_button = Button((SCREEN_WIDTH / 2 , SCREEN_HEIGHT / 2) , '../graphics/paused_button0.png' , (96, 64)) 
-        self.play_button = Button((SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2), '../graphics/play_button0.png', (94, 64))
-
-    def pause(self, surface): 
-        if self.paused_button.draw(surface):
-            self.paused_button.image = load_image('../graphics/paused_button1.png', (96, 64))
-            return True
-        else: 
-            return False
-    def main_menu(self, surface):
-        if self.play_button.draw(surface):
-            self.play_button.image = load_image('../graphics/play_button1.png', (94, 64))
-            return True
-        else:
-            return False
 
 # Something to be used for tests
 class Example(pygame.sprite.Sprite):
