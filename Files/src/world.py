@@ -5,6 +5,7 @@ from score import Score
 from util import *
 from menu_script import Menus
 from coin import Coins
+from SoundManagement import SoundManager
 
 class Level:
     def __init__(self):
@@ -37,6 +38,8 @@ class Level:
         self.background_sprite = load_image('../graphics/background.png', (SCREEN_WIDTH, SCREEN_HEIGHT))
         self.score = Score( ( 0 , 0) , 0)
         self.coins = Coins([self.all_game_sprites , self.collision_sprites] , 500)
+
+        self.soundMixer = SoundManager()
     def Game_over(self):
         # Resets the game to how it was at the start
         self.player.reset() 
@@ -65,7 +68,7 @@ class Level:
             self.all_states['Main_game'] = True 
 
     def Main_game(self, dt):
-        self.display_surf.fill((50,50,50))
+        self.display_surf.fill((10, 10, 10))
         self.score.update(self.player , self.display_surf)
         self.coins.update()
         self.enemies.update(dt)
